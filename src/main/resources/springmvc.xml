@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!-- 注解扫描 -->
+    <context:component-scan base-package="com.zju.controller"></context:component-scan>
+   <!--  <context:component-scan base-package="com.zju.configuration"></context:component-scan>
+   	<context:component-scan base-package="com.zju.interceptor"></context:component-scan> -->
+    <!-- 注解驱动 -->
+    <mvc:annotation-driven></mvc:annotation-driven>
+   
+     <!-- 静态资源 -->
+    <mvc:resources location="/fonts/" mapping="/fonts/**"></mvc:resources>
+    <mvc:resources location="/images/" mapping="/images/**"></mvc:resources>
+    <mvc:resources location="/scripts/" mapping="/scripts/**"></mvc:resources>
+    <!-- <mvc:resources location="/templates/" mapping="/templates/**"></mvc:resources> -->
+    <mvc:resources location="/styles/" mapping="/styles/**"></mvc:resources>
+     <!-- Multipart解析器 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></bean>
+     <!--配置velocity   前端的模板语言-->
+    <!--controller返回个user,根据配置的velocityConfigurer,到WEB-INF/views文件夹下面找到user.vm-->
+    <bean id="velocityConfigurer" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <!--模板存放路径-->
+        <property name="resourceLoaderPath" value="/templates"/>
+        <property name="velocityProperties">
+            <props>
+                <prop key="input.encoding">utf-8</prop>
+                <prop key="output.encoding">utf-8</prop>
+                <!--是否缓存-->
+                <prop key="file.resource.loader.cache">false</prop>
+                <!--修改检查间隔  设置为0就是不用检查-->
+                <prop key="file.resource.loader.modificationCheckInterval">1</prop>
+                <!--是否自动加载-->
+                <prop key="velocimacro.library.autoreload">false</prop>
+            </props>
+        </property>
+    </bean>
+     <!-- spring整合velocity模板语言,用于替代jsp,解决了一些jsp不好的地方 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+         <!-- 视图后缀名 -->
+         <property name="suffix" value=".html"/>
+         <property name="contentType" value="text/html;charset=utf-8"/>
+        <!--  日期函数名称 -->
+         <property name="dateToolAttribute"  value="date" />
+     </bean>
+	  <!--拦截器-->
+	  <mvc:interceptors>
+	  	  <!-- 注意先后顺序 -->
+	      <mvc:interceptor>
+	          <mvc:mapping path="/**"/>
+	          <bean class="com.zju.interceptor.PassportInterceptor"/>
+	      </mvc:interceptor>
+	      <mvc:interceptor>
+	          <mvc:mapping path="/set*"/>
+	          <bean class="com.zju.interceptor.LoginRequiredInterceptor"/>
+	      </mvc:interceptor>
+	  </mvc:interceptors>
+</beans>

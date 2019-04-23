@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zju.mapper.NewsMapper">
+	<select id="selNewsByUserIdAndPage" resultType="com.zju.pojo.News">
+		select id,title,link,image,like_count likecount,comment_count commentcount,
+		user_id userid,created_date createddate from news 
+		<where>
+			<if test="userId>0">
+			    user_id = #{userId}
+		    </if>
+		</where>
+		order by created_date desc limit #{offset},#{limit}
+	</select>
+</mapper>
